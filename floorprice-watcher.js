@@ -8,7 +8,9 @@ const webhookClient = new Discord.WebhookClient(process.env.DISCORD_CHANNELID, p
 const embed = new Discord.MessageEmbed().setTitle("Floor Price Warning").setColor("#0099ff")
 
 const COLLECTION_NAME = "otherdeed"
-const MAX_THRESHOLD = 3.6
+const PRICE_THRESHOLD = 3.6
+const PRICE_LISTING = 4.6
+const FACTOR_REWARD = 1.4
 
 // #############
 // ### START ###
@@ -44,16 +46,21 @@ async function main() {
 async function runJob() {
   // Check Floor Price via OpenSea
   const result = await axios.get(`https://api.opensea.io/collection/${COLLECTION_NAME}`)
-  const floorPrice = result.data.collection.stats.floor_price
+  const floorPrice = parseFloat(result.data.collection.stats.floor_price)
   console.log(`${COLLECTION_NAME} Floor price at ${floorPrice}`)
 
 
-  if (parseFloat(floorPrice) > MAX_THRESHOLD) {
+  if(floorPrice > PRICE_THRESHOLD) {
     // Send to Discord
-    sendDiscord(`WARNING FLOOR PRICE on ${COLLECTION_NAME} exceeds your Threshold:     ${floorPrice} > ${MAX_THRESHOLD}`)
+    sendDiscord(`WARNING ${COLLECTION_NAME}: Floor Price exceeds your Threshold:     ${floorPrice} > ${PRICE_THRESHOLD}`)
   } else {
     // Send to Discord
     // sendDiscord(`INFO FLOOR PRICE on ${COLLECTION_NAME} is fine:     ${floorPrice} < ${MAX_THRESHOLD}`)
+  }
+
+  if(floorPrice * FACTOR_REWARD < PRICE_LISTING){
+    // Send to Discord
+    sendDiscord(`INFO ${COLLECTION_NAME}: Listing Price of ${PRICE_LISTING}ETH is lower than minimum Earn Threshold of ${floorPrice * FACTOR_REWARD}`)
   }
 }
 
