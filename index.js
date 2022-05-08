@@ -29,13 +29,13 @@ async function main() {
   jobs["Job"] = schedule.scheduleJob(delayedStart, async () => {
     runJob()
       .then(() => {
-        var nextSchedule = new Date(new Date().getTime() + 12 * 3600 * 1000 + rndWaitSec * 1000)
+        var nextSchedule = new Date(new Date().getTime() + 0.5 * 3600 * 1000)
 
         jobs["Job"].reschedule(nextSchedule)
       })
       .catch(() => {
         // try again on error (Polygon in error state, e.g. too busy)
-        var nextScheduleError = new Date(new Date().getTime() + 1 * 3600 * 1000) // 1 hour
+        var nextScheduleError = new Date(new Date().getTime() + 0.5 * 3600 * 1000) // 1 hour
         jobs["Job"].reschedule(nextScheduleError)
       })
   })
@@ -53,7 +53,7 @@ async function runJob() {
     sendDiscord(`WARNING FLOOR PRICE on ${COLLECTION_NAME} exceeds your Threshold:     ${floorPrice} > ${MAX_THRESHOLD}`)
   } else {
     // Send to Discord
-    sendDiscord(`INFO FLOOR PRICE on ${COLLECTION_NAME} is fine:     ${floorPrice} < ${MAX_THRESHOLD}`)
+    // sendDiscord(`INFO FLOOR PRICE on ${COLLECTION_NAME} is fine:     ${floorPrice} < ${MAX_THRESHOLD}`)
   }
 }
 
